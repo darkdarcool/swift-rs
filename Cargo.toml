@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+  "crates/stant-lang",
+  "crates/stant-lexer"
+]
+
+resolver = "2"

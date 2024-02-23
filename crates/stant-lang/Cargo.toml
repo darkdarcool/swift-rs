@@ -1,0 +1,8 @@
+[package]
+name = "stant-lang"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stant-lexer = { path = "../stant-lexer" }
+oxc_allocator = "0.7.0"
