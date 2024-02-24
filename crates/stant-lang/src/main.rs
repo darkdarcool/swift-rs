@@ -4,11 +4,11 @@ use oxc_allocator::Allocator;
 fn main() {
     let alloc = Allocator::default();
 
-    let source = "Any";
+    let source = "apple axe `shaw` app";
 
     let mut lexer = Lexer::new(&alloc, source);
 
-    while !lexer.source.is_at_end() {
+    while !lexer.is_at_end() {
         let tok = lexer.next_token();
         if tok.kind != TokenKind::Empty {
             let span = tok.span;

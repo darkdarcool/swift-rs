@@ -24,7 +24,7 @@ pub struct Lexer<'alloc> {
     /// The source code to be tokenized.
     pub source: Source,
     /// The current index in the source code.
-    index: usize,
+    // index: usize,
 
     pub token: Token,
 }
@@ -45,7 +45,7 @@ impl<'a> Lexer<'a> {
         Lexer {
             alloc,
             source: Source::new(source),
-            index: 0,
+            // index: 0,
             token: Token::default(),
         }
     }
@@ -60,20 +60,21 @@ impl<'a> Lexer<'a> {
 
     #[inline]
     fn bump(&mut self) {
-        self.index += 1;
+        self.source.advance_ptr();
+        //self.index += 1;
     }
 
     pub fn next_token(&mut self) -> Token {
         let next_byte = self.read_byte();
         if let Some(handler) = self.handler_from_byte(next_byte) {
-            self.token.span.start = self.index;
+            self.token.span.start = self.source.current_pos(); // self.index;
             handler(self);
         } else {
             println!("Unexpected byte: {} [{}]", next_byte as char, next_byte);
             self.bump();
         }
 
-        self.token.span.end = self.index;
+        self.token.span.end = self.source.current_pos(); // self.index
 
         let tok = self.token;
         self.token = Token::default();
@@ -90,12 +91,14 @@ impl<'a> Lexer<'a> {
 
     pub fn read_byte(&mut self) -> u8 {
         // unsafe { *self.source.ptr.add(self.index) }
-        self.source.advance(self.index)
+        // self.source.advance(self.index)
+        self.source.current()
     }
 
     pub fn next_eq(&mut self, c: char) -> bool {
         if self.source.peek() == Some(c as u8) {
-            self.source.advance(1);
+            // In the event this breaks, change this
+            // self.source.advance(1);
             self.bump();
             true
         } else {
@@ -104,7 +107,6 @@ impl<'a> Lexer<'a> {
     }
 
     pub fn is_at_end(&self) -> bool {
-        // don't use source.is_at_end() because it's not accurate
         self.source.is_at_end()
     }
 

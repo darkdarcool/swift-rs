@@ -1,6 +1,4 @@
-// `Source` is in a bad state, and is used poorly in the lexer.
-// `Lexer` maintains `index`, and `source` maintains `ptr`, and maintaing both
-// was a massive pain.
+// Concept of [Source] is taken from oxc by Boshen <https://github.com/oxc-project/oxc/blob/main/crates/oxc_parser/src/lexer/source.rs>
 
 /// `Source` contains the source code of the program, and is consumed the by lexer
 /// The reason it's only stored in the lexer is because the lexer is the only consumer
@@ -76,25 +74,29 @@ impl Source {
         self.ptr as usize - self.start as usize
     }
 
-    pub fn advance(&mut self, index: usize) -> u8 {
+    pub(super) fn advance(&mut self, index: usize) -> u8 {
         let value = unsafe { *self.start.add(index) };
         self.ptr = unsafe { self.start.add(index) };
         value
     }
 
-    pub fn add(&mut self, index: usize) -> u8 {
-        unsafe { *self.ptr.add(index) }
+    pub(super) fn advance_ptr(&mut self) {
+        self.ptr = unsafe { self.ptr.add(1) };
     }
 
-    pub fn current(&self) -> u8 {
+    pub(super) fn current(&self) -> u8 {
         unsafe { *self.ptr.as_ref().unwrap() }
     }
 
-    pub fn is_at_end(&self) -> bool {
+    pub(super) fn current_pos(&self) -> usize {
+        self.ptr as usize - self.start as usize
+    }
+
+    pub(super) fn is_at_end(&self) -> bool {
         self.ptr >= self.end
     }
 
-    pub fn peek(&self) -> Option<u8> {
+    pub(super) fn peek(&self) -> Option<u8> {
         if self.ptr < self.end {
             let value = unsafe { *self.ptr.offset(1).as_ref().unwrap() };
 
@@ -104,18 +106,19 @@ impl Source {
         }
     }
 
-    pub fn get_slice<'a>(&self, start: usize, end: usize) -> &'a str {
+    pub(super) fn get_slice<'a>(&self, start: usize, end: usize) -> &'a str {
         let len = end - start;
         unsafe { std::str::from_utf8_unchecked(std::slice::from_raw_parts(self.start.add(start), len)) }
     }
 
     /// Get offset of the current position
-    pub fn offset(&self) -> u32 {
+    #[allow(dead_code)]
+    pub(super) fn offset(&self) -> u32 {
         self.ptr as u32 - self.start as u32
     }
 
 
-    pub fn next_char(&mut self) -> Option<char> {
+    pub(super) fn next_char(&mut self) -> Option<char> {
         if self.ptr < self.end {
             let value = unsafe { *self.ptr.as_ref().unwrap() };
             self.ptr = unsafe { self.ptr.add(1) };
@@ -125,7 +128,10 @@ impl Source {
         }
     }
 
-    pub fn peek_char(&self) -> Option<char> {
+    /// Peek at the next character in the Source
+    /// (Will be used later)
+    #[allow(dead_code)]
+    pub(super) fn peek_char(&self) -> Option<char> {
         if self.ptr < self.end {
             let value = unsafe { *self.ptr.as_ref().unwrap() };
             Some(value as char)
