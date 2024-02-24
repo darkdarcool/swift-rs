@@ -3,7 +3,7 @@
 use crate::Lexer;
 use crate::token::TokenKind;
 
-
+/// A byte handler is a function that handles a specific byte value
 pub type ByteHandler = Option<for<'arena> fn(&mut Lexer<'arena>)>;
 
 /// List of byte handlers for each byte value.
@@ -14,9 +14,9 @@ pub static BYTE_HANDLERS: [ByteHandler; 256] = [
     ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 1 32
     SPS, ___, ___, ___, IDN, ___, ___, ___, ___, ___, ___, PLS, ___, ___, ___, ___, // 2 48
     ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 3 64
-    ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 4 80
+    ___, LUA, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 4 80
     ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 5 96
-    QUI, L_A, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, // 6 112
+    QUI, LLA, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, // 6 112
     IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, ___, ___, ___, ___, ___, // 7
     UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // 8
     UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // 9
@@ -29,6 +29,15 @@ pub static BYTE_HANDLERS: [ByteHandler; 256] = [
 ];
 
 pub const ___: ByteHandler = None;
+
+/// Literal uppercase `A`
+pub const LUA: ByteHandler = Some(|lex| {
+    // Only `As` is a keyword that starts with uppercase `A`
+    lex.token.kind = match lex.identifier_handler() {
+        "As" => TokenKind::As,
+        _ => TokenKind::Identifier,
+    }
+});
 
 pub const UNI: ByteHandler = Some(|lex| {
     lex.source.advance(1);
@@ -63,11 +72,13 @@ pub const IDN: ByteHandler = Some(|lex| {
     lex.token.kind = TokenKind::Empty;
 });
 
-/// Literal A
-pub const L_A: ByteHandler = Some(|lex| {
+/// Literal lowercase A
+pub const LLA: ByteHandler = Some(|lex| {
     // lex.identifier_handler();
     lex.token.kind = match lex.identifier_handler() {
         "await" => TokenKind::Await,
+        // "As" => TokenKind::As,
+        // I don't think capitalization counts here
         _ => TokenKind::Identifier,
     }
     // lex.token.kind = TokenKind::Identifier;

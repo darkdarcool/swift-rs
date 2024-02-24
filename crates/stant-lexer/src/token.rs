@@ -6,6 +6,7 @@ pub struct Span {
 
 // Yes, this is 100 lines of tokens. I'm sorry.
 // TODO: Refactor this enum to make it more organized and readable
+/// Tokens for the Swift language, the list of keywords is courtesy of <https://docs.swift.org/swift-book/documentation/the-swift-programming-language/lexicalstructure#Keywords-and-Punctuation>
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum TokenKind {
     // Please add this part of the enum (Plus, PlusEq should be their own thing)
@@ -112,6 +113,9 @@ pub enum TokenKind {
     Empty,
 }
 
+/// Representing a token in the source code
+///
+/// To get the actual value of the token, you can access its [`Span`] field and use it to get a slice of the source code
 #[derive(Debug, Default, Clone, Copy)]
 pub struct Token {
     pub kind: TokenKind,

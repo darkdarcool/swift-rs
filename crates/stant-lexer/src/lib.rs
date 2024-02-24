@@ -69,6 +69,7 @@ impl<'a> Lexer<'a> {
             self.token.span.start = self.index;
             handler(self);
         } else {
+            println!("Unexpected byte: {} [{}]", next_byte as char, next_byte);
             self.bump();
         }
 

@@ -7,6 +7,7 @@ impl<'a> Lexer<'a> {
             let byte = self.read_byte();
 
             if byte.is_ascii_alphanumeric() && (byte as char) != ' ' || byte == b'_' {
+                println!("Byte: {}", byte as char);
                 self.index += 1;
                 // println!("Byte: {}", byte as char);
             } else {
