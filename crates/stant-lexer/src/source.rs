@@ -74,10 +74,10 @@ impl Source {
         self.ptr as usize - self.start as usize
     }
 
-    pub(super) fn advance(&mut self, index: usize) -> u8 {
-        let value = unsafe { *self.start.add(index) };
-        self.ptr = unsafe { self.start.add(index) };
-        value
+    pub(super) fn advance(&mut self, offset: usize) {
+        // let value = unsafe { *self.start.add(index) };
+        // self.ptr = unsafe { self.start.add(index) };
+        self.ptr = unsafe { self.ptr.add(offset) };
     }
 
     pub(super) fn advance_ptr(&mut self) {

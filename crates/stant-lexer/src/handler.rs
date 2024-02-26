@@ -56,7 +56,9 @@ pub const QUI: ByteHandler = Some(|lex| {
 /// `+`
 pub const PLS: ByteHandler = Some(|lex| {
     if lex.next_eq('=') {
-        lex.index += 2;
+        // lex.index += 2;
+        // lex.source.advance(2);
+        lex.source.advance(2);
         lex.token.kind = TokenKind::PlusEq;
     } else {
         lex.bump();
@@ -69,7 +71,7 @@ pub const PLS: ByteHandler = Some(|lex| {
 pub const IDN: ByteHandler = Some(|lex| {
     lex.identifier_handler();
 
-    lex.token.kind = TokenKind::Empty;
+    lex.token.kind = TokenKind::Identifier;
 });
 
 /// Literal lowercase A
@@ -93,3 +95,4 @@ pub const SPS: ByteHandler = Some(|lex| {
 pub const EOF: ByteHandler = Some(|_lex| {
     println!("End of file reached");
 });
+
