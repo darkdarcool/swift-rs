@@ -4,7 +4,7 @@ use oxc_allocator::Allocator;
 fn main() {
     let alloc = Allocator::default();
 
-    let source = "hello world";
+    let source = "hello +=";
 
     let mut lexer = Lexer::new(&alloc, source);
 

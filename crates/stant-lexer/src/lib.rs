@@ -6,7 +6,7 @@ pub mod token;
 use handler::{ByteHandler, BYTE_HANDLERS};
 use oxc_allocator::Allocator;
 use crate::source::Source;
-use crate::token::Token;
+use crate::token::{Token, TokenKind};
 
 // `Lexer` is a struct that holds a reference to an `Allocator` and a `Source` instance.
 ///
@@ -50,6 +50,8 @@ impl<'a> Lexer<'a> {
         }
     }
 
+    /// Returns the [`ByteHandler`] for the given byte
+    /// Returns `None` if the byte does not have a handler
     fn handler_from_byte(&self, byte: u8) -> ByteHandler {
         unsafe { *(&BYTE_HANDLERS as *const ByteHandler).offset(byte as isize) }
     }
@@ -118,3 +120,65 @@ impl<'a> Lexer<'a> {
         self.source.next_char().unwrap() as u8
     }
 }
+
+/*
+assert_lexer!("hello +", [Token::Identifier, Token::Plus])
+*/
+macro_rules! assert_lexer {
+    ($src:expr, [$($tok:expr),*]) => {
+        let alloc = Allocator::default();
+        let mut lexer = Lexer::new(&alloc, $src);
+        let mut tokens = Vec::new();
+        while !lexer.is_at_end() {
+            let tok = lexer.next_token();
+            tokens.push(tok);
+        }
+
+        let expected = vec![$($tok),*];
+        // filter out empty Token in tokens
+        let tokens: Vec<_> = tokens.into_iter().filter(|t| t.kind != TokenKind::Empty).collect();
+
+        for (i, tok) in tokens.iter().enumerate() {
+            // print the tok
+            assert_eq!(tok.kind, expected[i]);
+        }
+    };
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_lexer_empty() {
+        assert_lexer!("", []);
+    }
+
+    #[test]
+    fn test_lexer_plain_identifier() {
+        assert_lexer!("hello swift people", [TokenKind::Identifier, TokenKind::Identifier, TokenKind::Identifier]);
+    }
+
+    #[test]
+    fn test_lexer_plain_identifier_with_quoted_identifier() {
+        assert_lexer!("hello `swift` people", [TokenKind::Identifier, TokenKind::Identifier, TokenKind::Identifier]);
+    }
+
+    #[test]
+    fn test_lexer_multiple_quoted_identifier() {
+        assert_lexer!("`hello` `swift` `people`", [TokenKind::Identifier, TokenKind::Identifier, TokenKind::Identifier]);
+    }
+
+    #[test]
+    fn test_lexer_keyword() {
+        assert_lexer!("await As", [TokenKind::Await, TokenKind::As]);
+    }
+
+    #[test]
+    fn test_lexer_keyword_with_identifier() {
+        assert_lexer!("await As hello", [TokenKind::Await, TokenKind::As, TokenKind::Identifier]);
+    }
+}
+
+
+

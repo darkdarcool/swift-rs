@@ -58,7 +58,7 @@ pub const PLS: ByteHandler = Some(|lex| {
     if lex.next_eq('=') {
         // lex.index += 2;
         // lex.source.advance(2);
-        lex.source.advance(2);
+        lex.source.advance(1);
         lex.token.kind = TokenKind::PlusEq;
     } else {
         lex.bump();
