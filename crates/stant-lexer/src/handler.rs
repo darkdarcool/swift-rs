@@ -10,13 +10,13 @@ pub type ByteHandler = Option<for<'arena> fn(&mut Lexer<'arena>)>;
 /// Ref: <https://www.freecodecamp.org/news/ascii-table-hex-to-ascii-value-character-code-chart-2/>
 pub static BYTE_HANDLERS: [ByteHandler; 256] = [
 //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F   //
-    EOF, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 0 16
-    ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 1 32
-    SPS, ___, ___, ___, IDN, ___, ___, ___, ___, ___, ___, PLS, ___, ___, ___, ___, // 2 48
-    ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 3 64
-    ___, LUA, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 4 80
-    ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 5 96
-    QUI, LLA, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, // 6 112
+    EOF, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 0
+    ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 1
+    SPS, ___, ___, ___, IDN, ___, ___, ___, ___, ___, ___, PLS, ___, ___, ___, ___, // 2
+    ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 3
+    ___, LUA, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 4
+    ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, // 5
+    QUI, LLA, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, // 6
     IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, IDN, ___, ___, ___, ___, ___, // 7
     UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // 8
     UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // 9
@@ -39,6 +39,7 @@ pub const LUA: ByteHandler = Some(|lex| {
     }
 });
 
+/// Unicode character
 pub const UNI: ByteHandler = Some(|lex| {
     lex.source.advance(1);
     // TODO: Whatever this is
@@ -92,6 +93,7 @@ pub const SPS: ByteHandler = Some(|lex| {
     lex.bump();
 });
 
+/// The... end... of... the.. file?
 pub const EOF: ByteHandler = Some(|_lex| {
     println!("End of file reached");
 });
