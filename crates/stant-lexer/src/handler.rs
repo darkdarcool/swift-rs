@@ -80,7 +80,8 @@ pub const LLA: ByteHandler = Some(|lex| {
     // lex.identifier_handler();
     lex.token.kind = match lex.identifier_handler() {
         "await" => TokenKind::Await,
-        // "As" => TokenKind::As,
+        // TODO: Check if `any` is case-sensitive
+        "any" => TokenKind::Any,
         // I don't think capitalization counts here
         _ => TokenKind::Identifier,
     }

@@ -1,5 +1,6 @@
 use crate::Lexer;
 
+
 impl<'a> Lexer<'a> {
     pub(super) fn identifier_handler(&mut self) -> &'a str {
         let start = self.source.current_pos();
